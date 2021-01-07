@@ -57,6 +57,7 @@
     "@umijs/preset-ui": "^2.2.9",
     "antd": "^4.9.4",
     "axios": "^0.21.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "less": "^4.0.0",
     "less-loader": "^7.1.0",
     "react": "^17.0.1",

@@ -1,5 +1,5 @@
 # react-demo
-config webpack customly to make a react demo project.
+config webpack customly to make a react music163 demo project.
 
 
 ## description
@@ -9,6 +9,7 @@ Just for leaning.
 Poor English :)   
 
 ## done
+- add ant-design
 - setting react environment and compile successfully
 - webpack build config
 - webpack base config
@@ -16,4 +17,3 @@ Poor English :)
 
 ## todo
 - DllReferencePlugin
-- add ant-design
