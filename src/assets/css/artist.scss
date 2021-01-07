@@ -1,0 +1,74 @@
+$redTitle: #c20c0c;
+
+.ant-tabs-top > .ant-tabs-nav::before {
+  border-bottom: 2px solid $redTitle;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #333;
+  font-size: 24px;
+}
+
+.ant-tabs-ink-bar {   
+  background: $redTitle;
+}
+
+.artists-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  &__item {
+    display: flex;
+    flex-direction: column;
+    img {
+      width: 130px;
+      height: 130px;
+      margin-bottom: 10px;
+    }
+    div {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  &__item2 {
+    display: flex;
+  }
+}
+
+.divider {
+  width: 100%;
+  border-top: 1px solid dashed;
+}
+
+.artist-page {
+  display: flex;
+}
+
+.artist-left {
+  width: 160px;
+  padding: 10px;
+  ul {
+    padding-left: 0;
+  }
+}
+
+.artist-right {
+  flex: 1;
+}
+
+.artist-name {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.li:hover, .li-active:hover {
+  text-decoration: underline;
+}
+
+.li-active {
+  color: $redTitle;
+}

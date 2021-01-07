@@ -30,10 +30,12 @@ const Header = () => {
       },
       {
         key: 'fm',
-        text: '主播电台'
+        text: '主播电台',
+        url: '/discover/djradio'
       },{
         key: 'singer',
-        text: '歌手'
+        text: '歌手',
+        url: '/discover/artist'
       },
       {
         key: 'new',

@@ -1,0 +1,117 @@
+$redText: #ba2226;
+$redTitle: #c20c0c;
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  margin: 2px auto 0;
+  img {
+    position: absolute;
+    left: 24px;
+    transform: translateX(-14px);
+    clip: rect(0 28px 48px 0);
+  }
+  span {
+    margin-top: 60px;
+    white-space: nowrap;
+  }
+}
+
+.programs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.program-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  &:nth-child(even) {
+    background: #f7f7f7;
+  }
+  &:nth-child(odd) {
+    background: #fff;
+  }
+  &:hover {
+    background: #eee;
+  }
+  &__col {
+    display: flex;
+    flex-direction: column;
+    min-width: 30px;
+  }
+  &__row {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    img {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+  }
+}
+
+.program-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 208px;
+}
+
+.up {
+  color: $redText;
+}
+
+.down {
+  color: #4abbeb;
+}
+
+.program-item:nth-child(-n + 3) > .program-item__col > span {
+  color: $redText;
+}
+
+.radio-item {
+  &__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: 20px;
+    grid-column-gap: 20px;
+  }
+  &__div {
+    display: flex;
+    padding: 20px 0;
+    &:nth-child(-n + 2) {
+      border-bottom: 1px solid #e7e7e7;
+    }
+    img {
+      width: 120px;
+      height: 120px;
+      margin-right: 20px;
+    }
+  }
+}
+
+.ant-tabs-top > .ant-tabs-nav::before {
+  border-bottom: 2px solid $redTitle;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #333;
+  font-size: 24px;
+}
+
+.ant-tabs-ink-bar {   
+  background: $redTitle;
+}
