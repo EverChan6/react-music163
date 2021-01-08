@@ -1,0 +1,16 @@
+
+@import '../index.scss';
+.custom-tab__header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #c20c0c;
+  &-title {
+    margin-right: 10px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  button {
+    margin-left: auto;
+  }
+}
