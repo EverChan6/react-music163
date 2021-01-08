@@ -26,9 +26,13 @@ const routes = [
     component: React.lazy(() => import('../pages/FM'))
   },
   {
-    path: '/discover/artist/',
+    path: '/discover/artist',
     component: React.lazy(() => import('../pages/Artist'))
   },
+  {
+    path: '/discover/album',
+    component: React.lazy(() => import('../pages/Album'))
+  }
 ]
 
 export default routes

@@ -39,7 +39,8 @@ const Header = () => {
       },
       {
         key: 'new',
-        text: '新碟上架'
+        text: '新碟上架',
+        url: '/discover/album'
       }]
     },
     {
