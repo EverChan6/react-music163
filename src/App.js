@@ -1,16 +1,14 @@
-import React, { memo, Suspense } from 'react'
-// import { Provider } from 'react-redux'
-import { Spin } from 'antd'
+import React from 'react'
 import Header from './layouts/Header'
 import AppMain from './layouts/AppMain'
-import Footer from './layouts/AppMain'
+import Footer from './layouts/Footer'
 
 const App = () => {
   return (
     <>
       <Header/>
       <AppMain/>
-      {/* <Footer /> */}
+      <Footer />
     </>
   )
 }

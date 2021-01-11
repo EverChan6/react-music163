@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Carousel, Tabs } from 'antd'
+import { useHistory } from 'react-router-dom'
+import { Carousel, Tabs, Button } from 'antd'
 import { getBanner, getHotRecommend, getRecommend, getAlbum, getTopList } from "../api/index"
-import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined } from "@ant-design/icons"
+import { getNewestAlbum } from '../api/album'
+import { getDetail } from '../api/toplist'
+import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined, PlusOutlined } from "@ant-design/icons"
 import '../assets/index.scss'
 import { Link } from 'react-router-dom'
 
@@ -24,7 +27,7 @@ const HeadCarousel = () => {
       {
         banner.map(item => {
           return (
-            <div key={item.imageUrl}>
+            <div key={item.imageUrl} className='carousel-banner' style={{ backgroundImage: `url(${item.imageUrl} + '?imageView&blur=40x20')`, backgroundSize: '6000px', backgroundPosition: 'center center' }}>
               <img src={item.imageUrl} alt={item.typeTitle}/>
             </div>
           )
@@ -37,28 +40,49 @@ const HeadCarousel = () => {
 
 // 热门推荐
 const HotRecommend = () => {
-  const [tags, setTags] = useState([])
-  const [recommend, setRecommend] = useState([])
-
   const limit = 8
+  let history = useHistory()
 
+  const [tags, setTags] = useState([])
   useEffect(() => {
     const fetchData = async () => {
       const { tags } = await getHotRecommend()
       setTags(tags)
-      const { result } = await getRecommend({ limit })
-      setRecommend(result)
     }
 
     fetchData()
   }, [])
 
+  
+  const [recommend, setRecommend] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const { result } = await getRecommend({ limit })
+      setRecommend(result)
+    }
+    
+    fetchData()
+  }, [])
+
   function callback(key) {
-    console.log(key)
+    let tabname = ''
+    // 匹配点击的歌单类型
+    for(let i = 0; i < tags.length; i ++) {
+      let item = tags[i]
+      if(item.id === +key) {
+        tabname = item.name
+        break
+      }
+    }
+    history.push('/discover/playlist?cat=' + tabname)
   }
+
+  const operations = <Button type='text' onClick={() => callback(null)}>更多→</Button>
+
   return (
-    <Tabs defaultActiveKey="1" onChange={callback}>
+    <Tabs defaultActiveKey="1" onChange={callback} tabBarExtraContent={operations}>
       <TabPane tab='热门推荐' key='0'>
+        <div className='recommend-tabpane'>
         {
           recommend.map(item => {
             return (
@@ -70,7 +94,7 @@ const HotRecommend = () => {
                       <UserOutlined />
                       <span>{item.playCount}</span>
                     </div>
-                    <PlayCircleOutlined />
+                    <PlayCircleOutlined style={{ cursor: 'pointer' }} />
                   </div>
                 </div>
                 <div className='card-text'>{item.name}</div>
@@ -78,6 +102,7 @@ const HotRecommend = () => {
             )
           })
         }
+        </div>
       </TabPane>
       {
         tags.map(item => {
@@ -97,23 +122,18 @@ const HotRecommend = () => {
 const NewAlbum = () => {
   const [album, setAlbum] = useState([])
   const carouselRef = useRef(null)
+  let history = useHistory()
 
   useEffect(() => {
     const fetchData = async () => {
-      let params = {
-        limit: 30,
-        offset: 0,
-        area: 'ALL',
-        type: 'new'
-      }
-      const { monthData, weekData } = await getAlbum(params)
-      setAlbum(monthData.slice(0, 10))
+      const { albums } = await getNewestAlbum()
+      setAlbum(albums.slice(0, 10))
     }
 
     fetchData()
   }, [])
 
-  function goTo(flag) {
+  function carouselChange(flag) {
     if(flag) {
       carouselRef.current.next()
     }
@@ -122,10 +142,16 @@ const NewAlbum = () => {
     }
   }
 
+  function goTo() {
+    history.push('/discover/album')
+  }
+
+  const operations = <Button type='text' onClick={goTo}>更多→</Button>
+
   return (
-    <Tabs defaultActiveKey="1">
+    <Tabs defaultActiveKey="1" tabBarExtraContent={operations}>
       <TabPane className="tab-pane" tab='新碟上架' key="1">
-        <LeftOutlined className='left-icon' onClick={() => goTo(false)}/>
+        <LeftOutlined className='left-icon' onClick={() => carouselChange(false)}/>
         <Carousel dots={false} ref={carouselRef} className='new-album'>
           <div>
             {
@@ -135,7 +161,8 @@ const NewAlbum = () => {
                     <div className='card'>
                       <img src={item.picUrl} alt={item.name}/>
                     </div>
-                    <div className='card-text'>{item.name}</div>
+                    <div className='album-name'>{item.name}</div>
+                    <div className='album-artist'>{item.artists.map(artist => artist.name).join(' / ')}</div>
                   </div>
                 )
               })
@@ -156,42 +183,72 @@ const NewAlbum = () => {
             }
           </div>
         </Carousel>
-        <RightOutlined className='right-icon' onClick={() => goTo(true)}/>
+        <RightOutlined className='right-icon' onClick={() => carouselChange(true)}/>
       </TabPane>
     </Tabs>
   )
 }
 
 // 榜单
-const TopList = () => {
-  const [toplist, setToplist] = useState([])
+const RankList = () => {
+  let history = useHistory()
+  const [rankNamelist, setToplist] = useState([])
+  const [songArr, setSongArr] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
       const { list } = await getTopList()
-      setToplist(list.slice(0, 3))
+      const arr = list.slice(0, 3)
+      setToplist(arr)
+      const parr = arr.map(item => {
+        return getDetail({ id: item.id })
+      })
+      const res = await Promise.all(parr)
+      setSongArr(res)
     }
 
     fetchData()
   }, [])
 
+  function goTo(id) {
+    history.push('/discover/toplist?id='+ id || rankNamelist[0].id)
+  }
+
+  const operations = <Button type='text' onClick={goTo}>更多→</Button>
+
   return (
-    <Tabs defaultActiveKey="1">
+    <Tabs defaultActiveKey="1" tabBarExtraContent={operations}>
       <TabPane tab='榜单' key="1">
         <div className='top-list'>
           {
-            toplist.map(item => {
+            rankNamelist.map((item, index) => {
               return (
                 <div className='top-list__item' key={item.id}>
                   <div className='top-list__item-cover'>
-                    <img src={item.coverImgUrl} alt={item.description}/>
+                    <img src={item.coverImgUrl} alt={item.description} onClick={() => goTo(item.id)}/>
                     <div>
-                      <h3>{item.name}</h3>
+                      <h3 onClick={() => goTo(item.id)}>{item.name}</h3>
                       <PlayCircleOutlined style={{ marginRight: '10px' }} />
                       <FileAddOutlined />
                     </div>
                   </div>
-                  <ul></ul>
+                  <ul className='rank-list'>
+                    {
+                      songArr?.[index]?.playlist?.tracks?.slice(0, 10).map((it, idx) => {
+                        return (
+                          <li key={idx} className='rank-list__li'>
+                            <span className='rank-list__li-idx'>{idx+1}</span>
+                            <span className='rank-list__li-name'>{it.name}</span>
+                            <div className='icon-group'>
+                              <PlayCircleOutlined/>
+                              <PlusOutlined style={{ margin: '0 10px' }}  />
+                              <FileAddOutlined />
+                            </div>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
                   <Link to={{ pathname: '/discover/toplist', search: '?id='+ item.id }}>查看更多</Link>
                 </div>
               )
@@ -209,7 +266,7 @@ function Discover() {
       <HeadCarousel />
       <HotRecommend />
       <NewAlbum />
-      <TopList />
+      <RankList />
     </>
   )
 }

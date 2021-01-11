@@ -1,13 +1,51 @@
 import React, { useState, useEffect } from 'react'
 import { Tabs, Pagination } from 'antd'
-import { getNewAlbum } from '../api/album'
+import { getNewestAlbum, getNewAlbum } from '../api/album'
 import { PlayCircleOutlined } from '@ant-design/icons'
 import '../assets/css/album.scss'
 
 
 const { TabPane } = Tabs
 
-const Album = () => {
+const AlbumItem = (props) => {
+  const { it } = props
+  return (
+    <div className='album' key={it.id}>
+      <div className='album-cover'>
+        <img src={it.picUrl} alt={it.name}/>
+        <PlayCircleOutlined className='play-btn' />
+      </div>
+      <div className='album-name'>{it.name}</div>
+      <div className='album-artist'>{it.artists.map(artist => artist.name).join(' / ')}</div>
+    </div>
+  )
+}
+
+const HotAlbum = () => {
+  const [list, setList] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const { albums } = await getNewestAlbum()
+      setList(albums)
+    }
+
+    fetchData()
+  }, [])
+
+  return (
+    <Tabs>
+      <TabPane tab='热门新碟' key='1' className='album-container'>
+        {
+          list.map(item => (
+            <AlbumItem it={item} key={item.id} />
+          ))
+        }
+      </TabPane>
+    </Tabs>
+  )
+}
+
+const AllAlbum = () => {
   const tabs = [{
     text: '全部新碟',
     key: 'ALL'
@@ -62,25 +100,13 @@ const Album = () => {
 
   return (
     <>
-      <Tabs>
-        <TabPane tab='热门新碟' key='1' className='album-container'>
-          
-        </TabPane>
-      </Tabs>
       <Tabs activeKey={curTab} onChange={callback}>
         {
           tabs.map(item => (
             <TabPane tab={item.text} key={item.key} className='album-container'>
               {
                 newAlbum.map(it => (
-                  <div className='album' key={it.id}>
-                    <div className='album-cover'>
-                      <img src={it.picUrl} alt={it.name}/>
-                      <PlayCircleOutlined className='play-btn' />
-                    </div>
-                    <div className='album-name'>{it.name}</div>
-                    <div className='album-artist'>{it.artists.map(artist => artist.name).join(' / ')}</div>
-                  </div>
+                  <AlbumItem it={it} key={it.id} />
                 ))
               }
             </TabPane>
@@ -92,4 +118,12 @@ const Album = () => {
   )
 }
 
+const Album = () => {
+  return (
+    <>
+      <HotAlbum />
+      <AllAlbum />
+    </>
+  )
+}
 export default Album

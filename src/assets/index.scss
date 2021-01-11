@@ -1,3 +1,10 @@
+.recommend-tabpane {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 10px;
+}
+
 .card-container {
   display: inline-flex;
   flex-direction: column;
@@ -37,6 +44,10 @@
 
 .tab-pane {
   position: relative;
+  .card-container {
+    width: 140px;
+    margin: 10px 20px;
+  }
 }
 
 .new-album {
@@ -65,6 +76,7 @@
     flex: 1;
     padding: 15px;
     border: 1px solid #eee;
+    cursor: pointer;
     &-cover {
       display: flex;
       img {
@@ -72,6 +84,42 @@
         height: 100px;
         margin-right: 8px;
       }
+    }
+  }
+}
+
+.icon-group {
+  display: none;
+  float: right;
+}
+
+
+.rank-list {
+  padding-left: 0;
+  &__li {
+    list-style-type: none;
+    padding: 5px 10px;
+    &:hover {
+      .rank-list__li-name {
+        text-decoration: underline;
+      }
+      .icon-group {
+        display: inline-block;
+      }
+    }
+    &:nth-child(-n+3) {
+      .rank-list__li-idx {
+        color: #c10d0c;
+      }
+    }
+    &:nth-child(odd) {
+      background-color: #fff;
+    }
+    &:nth-child(even) {
+      background-color: #f5f5f5;
+    }
+    &-idx {
+      margin-right: 10px;
     }
   }
 }

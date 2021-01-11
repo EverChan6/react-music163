@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Button, Tabs, Select, Pagination } from 'antd'
 import { getCatList, getPlayList } from '../api/index';
 import '../assets/css/playlist.scss'
@@ -31,7 +32,14 @@ const PlayList = () => {
     fetchData()
   }, [])
 
-  const [tabTitle, setTabTitle] = useState('全部歌单')
+  
+  const { search } = useLocation()
+  const obj = {}
+  search.slice(1).split('&').forEach(item => {
+    let s = item.split('=')
+    obj[s[0]] = s[1]
+  })
+  const [tabTitle, setTabTitle] = useState(obj.cat || '全部歌单')
   const [total, setTotal] = useState(0)
   const [playlist, setPlaylist] = useState([])
   const [page, setPage] = useState(1)
