@@ -44,23 +44,15 @@ const HotRecommend = () => {
   let history = useHistory()
 
   const [tags, setTags] = useState([])
+  const [recommend, setRecommend] = useState([])
   useEffect(() => {
     const fetchData = async () => {
       const { tags } = await getHotRecommend()
       setTags(tags)
-    }
-
-    fetchData()
-  }, [])
-
-  
-  const [recommend, setRecommend] = useState([])
-  useEffect(() => {
-    const fetchData = async () => {
       const { result } = await getRecommend({ limit })
       setRecommend(result)
     }
-    
+
     fetchData()
   }, [])
 
@@ -120,10 +112,10 @@ const HotRecommend = () => {
 
 // 新碟上架
 const NewAlbum = () => {
-  const [album, setAlbum] = useState([])
   const carouselRef = useRef(null)
   let history = useHistory()
 
+  const [album, setAlbum] = useState([])
   useEffect(() => {
     const fetchData = async () => {
       const { albums } = await getNewestAlbum()

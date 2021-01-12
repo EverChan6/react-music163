@@ -1,9 +1,15 @@
+.footer-container {
+  width: 100%;
+  border: 1px solid #eee;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 980px;
   margin: 0 auto;
+  padding: 50px;
 }
 
 .footer-left {
@@ -12,15 +18,21 @@
     &:first-child {
       display: flex;
       align-items: center;
-      div {
+      a {
+        color: #333;
         &:hover {
           text-decoration: underline;
         }
         &::after {
           content: '|';
           margin: 0 10px;
+          color: #eee;
         }
       }
     }
   }
+}
+
+.textarea {
+  margin-bottom: 10px;
 }

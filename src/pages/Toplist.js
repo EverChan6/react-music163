@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom"
 import { Table, Button, Pagination } from 'antd'
 import { PlayCircleOutlined, DownloadOutlined, FolderAddOutlined, MessageOutlined, ShareAltOutlined, SmileOutlined, TrademarkOutlined, LikeOutlined } from "@ant-design/icons"
 import '../assets/css/toplist.scss'
-import { getSummary, getDetail, getComment, getHotComment, getCommentNew } from "../api/toplist"
+import { getSummary, getDetail, getCommentNew } from "../api/toplist"
 
 // !!一定是在组件外部创建，不能在任何一个组件内部创建
 const IdContext = React.createContext({})
@@ -19,7 +19,7 @@ const ToplistLeft = (props) => {
 
     fetchData()
   }, [])
-
+  
   return (
     <div className='left-container'>
       <RankItem title='云音乐特色榜' rankList={rankList.slice(0, 4)} idChange={props.idChange}/>
@@ -55,14 +55,12 @@ const RankItem = (props) => {
 
 const ToplistRight = () => {
   const { listId } = useContext(IdContext)
-  const [playlist, setPlaylist] = useState([])
-  const [tracks, setTracks] = useState([])
+  const [playlist, setPlaylist] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
       const { playlist } = await getDetail({ id: listId })
       setPlaylist(playlist)
-      setTracks(playlist.tracks)
     }
 
     fetchData()
@@ -134,7 +132,7 @@ const ToplistRight = () => {
           </div>
         </div>
         {/* 默认key字段名为'key'，如果不是，则要设置rowKey指明字段名 */}
-        <Table dataSource={tracks} columns={columns} rowKey='id'/>
+        <Table dataSource={playlist?.tracks} columns={columns} rowKey='id'/>
       </div>
     </div>
   )
@@ -212,7 +210,7 @@ const CommentList = () => {
   )
 }
 
-const CommentItem = (props) => {
+const CommentItem = React.memo((props) => {
   return (
     <div>
       {
@@ -255,7 +253,7 @@ const CommentItem = (props) => {
       </ul>
     </div>
   )
-}
+})
 
 
 function Toplist() {
@@ -265,7 +263,9 @@ function Toplist() {
     let s = item.split('=')
     obj[s[0]] = s[1]
   })
-
+  if(!obj.hasOwnProperty('id')) {
+    obj.id = '19723756' // TODO: 等后面上状态管理库的时候把这个全局的状态赋值给它，目前通过nav menu打开排行榜的时候会拿不到id Ever@2021/01/11
+  }
   const [listId, setListId] = useState(obj.id)
 
   return (
