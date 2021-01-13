@@ -28,7 +28,7 @@ const Footer = () => {
             <a href='https://st.music.163.com/official-terms/privacy' target='_brank'>隐私政策</a>
             <a href='https://st.music.163.com/official-terms/children' target='_brank'>儿童隐私政策</a>
             <a href='https://music.163.com/st/staticdeal/complaints.html' target='_brank'>版权投诉指引</a>
-            <a href='javascript:void(0);' onClick={showModal} >意见反馈</a>
+            <a onClick={showModal} >意见反馈</a>
           </div>
           <div>
             <span style={{ marginRight: '20px' }}>违法和不良信息举报电话：0571-89853516</span>

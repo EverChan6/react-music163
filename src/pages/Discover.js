@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { Carousel, Tabs, Button } from 'antd'
 import { getBanner, getHotRecommend, getRecommend, getAlbum, getTopList } from "../api/index"
 import { getNewestAlbum } from '../api/album'
 import { getDetail } from '../api/toplist'
 import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined, PlusOutlined } from "@ant-design/icons"
 import '../assets/index.scss'
-import { Link } from 'react-router-dom'
 
 const { TabPane } = Tabs
 
 // 首页轮播图
 const HeadCarousel = () => {
+  let history = useHistory()
   const [banner, setBanner] = useState([])
   useEffect(() => {
     const fetchData = async () => {
@@ -22,13 +22,19 @@ const HeadCarousel = () => {
     fetchData()
   }, [])
 
+  function goTo(targetId) {
+    history.push('/song?id=' + targetId)
+  }
+
   return (
-    <Carousel autoplay={true}>
+    <Carousel autoplay={true} className='carousel'>
       {
         banner.map(item => {
           return (
-            <div key={item.imageUrl} className='carousel-banner' style={{ backgroundImage: `url(${item.imageUrl} + '?imageView&blur=40x20')`, backgroundSize: '6000px', backgroundPosition: 'center center' }}>
-              <img src={item.imageUrl} alt={item.typeTitle}/>
+            <div key={item.imageUrl}>
+              <div style={{ backgroundImage: `url('${item.imageUrl}?imageView&blur=40x20')` }} className='carousel-banner'>
+                <img src={item.imageUrl} alt={item.typeTitle} onClick={() => goTo(item.targetId)}/>
+              </div>
             </div>
           )
         })
