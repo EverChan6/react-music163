@@ -2,10 +2,6 @@
   display: flex;
 }
 
-.right-container {
-  align-self: stretch;
-}
-
 .up-container {
   display: flex;
   padding: 30px;
@@ -24,9 +20,7 @@
       margin-bottom: 10px;
       &:first-child {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        width: 120px;
       }
     }
   }
@@ -41,14 +35,169 @@
   text-align: right;
   span {
     text-decoration: underline;
+    cursor: pointer;
   }
 }
 
 .song-name {
   font-size: 21px;
   font-weight: bold;
+  margin: 0 10px;
 }
 
 .text {
   color: #0c73c2;
+}
+
+.show-btn {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.comment-header {
+  &__title {
+    border-bottom: 2px solid #c20c0c;
+    padding-bottom: 8px;
+    span {
+      &:first-child {
+        font-size: 20px;
+        line-height: 28px;
+        margin-right: 20px;
+      }
+    }
+  }
+  &__submit-area {
+    display: flex;
+    margin: 20px 0;
+    img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+  }
+  &__btn-group {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    textarea {
+      width: 100%;
+    }
+  }
+}
+
+.comment-body {
+  &__section {
+    padding: 15px 0;
+    &:first-child {
+      margin-bottom: 50px;
+    }
+    ul {
+      padding-left: 0;
+    }
+  }
+  &__title {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+}
+
+.comment-item {
+  display: flex;
+  padding: 15px 0;
+  border-bottom: 1px dashed #ddd;
+  img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+  &__right {
+    flex: 1;
+  }
+  &__oneself {
+    margin-bottom: 8px;
+  }
+  &__user {
+    color: #0c73c2;
+  }
+  &__comment {
+    display: inline-block;
+  }
+  &__bottom-area {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+}
+
+.reply-btn {
+  position: relative;
+  &::before {
+    content: '|';
+    margin: 10px;
+    color: #eee;
+  }
+}
+
+.refer-comment {
+  background-color: #eee;
+  padding: 10px 20px;
+  border: 1px solid #dedede;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #dedede;
+    border-left: 6px solid transparent;
+  }
+}
+
+.right-container {
+  flex: 0 0 270px;
+  align-self: stretch;
+  padding: 20px 40px 40px 30px;
+  border-left: 1px solid #ddd;
+  box-sizing: border-box;
+  &__section {
+    &-title {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+  }
+}
+
+.song-list {
+  li > div {
+    display: inline-block;
+    margin-left: 8px;
+    div {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.similar-list {
+  padding: 15px 0;
+  li {
+    display: flex;
+    align-items: center;
+    div {
+      &:first-child {
+        flex: 3;
+      }
+      &:nth-child(2) {
+        flex: 1;
+      }
+    }
+  }
 }
