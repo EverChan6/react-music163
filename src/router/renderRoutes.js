@@ -27,7 +27,7 @@ const renderRoutes = (routes, userInfo = {}, switchProps = {}) => routes
           )
         })
       }
-      <Route component={Discover} />
+      {/* <Route component={Discover} /> */}
     </Switch>
   )
   : null

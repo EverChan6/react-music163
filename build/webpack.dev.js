@@ -12,8 +12,8 @@ module.exports = merge(webpackConfig, {
     port: 8090,
     hot: true,
     contentBase: '../dist',
-    inline: true,
     historyApiFallback: true,
+    publicPath: '/',
     proxy: {
       '/': {
         target: 'http://localhost:3000',

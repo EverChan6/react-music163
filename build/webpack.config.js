@@ -17,7 +17,8 @@ module.exports = {
   output: {
     filename: '[name].[contenthash:8].js', // 打包后的文件名称
     path: path.resolve(__dirname, '../dist'), // 打包后输出的文件所在的目录
-    chunkFilename: 'js/[name]:[contenthash:8].js'
+    chunkFilename: 'js/[name]:[contenthash:8].js',
+    publicPath: '/'
   },
   resolve: {
     alias: {
