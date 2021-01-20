@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Button, Tabs, Select, Pagination } from 'antd'
-import { getCatList, getPlayList } from '../api/index';
-import '../assets/css/playlist.scss'
+import { getCatList, getPlayList } from '@/api/index';
+import '@/assets/css/discover/playlist.scss'
 import { PlayCircleOutlined, UserOutlined } from "@ant-design/icons"
 
 const { TabPane } = Tabs

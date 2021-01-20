@@ -6,32 +6,32 @@ const routes = [
   {
     path: '/',
     exact: true,
-    component: React.lazy(() => import('../pages/Discover'))
+    component: React.lazy(() => import('../pages/discover/Discover'))
   },
   {
     path: '/discover',
     exact: true,
-    component: React.lazy(() => import('../pages/Discover')),
+    component: React.lazy(() => import('../pages/discover/Discover')),
     routes: [
       {
         path: '/toplist',
-        component: React.lazy(() => import('../pages/Toplist'))
+        component: React.lazy(() => import('../pages/discover/Toplist'))
       },
       {
         path: '/playlist',
-        component: React.lazy(() => import('../pages/Playlist'))
+        component: React.lazy(() => import('../pages/discover/Playlist'))
       },
       {
         path: '/djradio',
-        component: React.lazy(() => import('../pages/FM'))
+        component: React.lazy(() => import('../pages/discover/FM'))
       },
       {
         path: '/artist',
-        component: React.lazy(() => import('../pages/Artist'))
+        component: React.lazy(() => import('../pages/discover/Artist'))
       },
       {
         path: '/album',
-        component: React.lazy(() => import('../pages/Album'))
+        component: React.lazy(() => import('../pages/discover/Album'))
       }
     ]
   },

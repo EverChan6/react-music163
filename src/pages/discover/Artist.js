@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { Button, Tabs } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
-import { getTopArtist, getArtistList } from '../api/artist'
-import '../assets/css/artist.scss'
+import { getTopArtist, getArtistList } from '@/api/artist'
+import '@/assets/css/discover/artist.scss'
 
 const { TabPane } = Tabs
 

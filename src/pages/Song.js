@@ -29,7 +29,7 @@ const Up = () => {
     const fetchData = async () => {
       const [{ songs }, { lrc }] = await Promise.all([getDetail({ ids: id }), getLyric({ id })]) 
       setSong(songs[0])
-      setLyric(lrc.lyric?.replace(/\[\d*:\d*\.\d*\]/g, '')?.split('\n'))
+      setLyric(lrc?.lyric?.replace(/\[\d*:\d*\.\d*\]/g, '')?.split('\n'))
     }
 
     fetchData()
@@ -88,7 +88,7 @@ const Up = () => {
   )
 }
 
-const Down = () => {
+export const Down = () => {
   const id = useContext(IdContext)
   const [offset, setOffset] = useState(0)
   const [pageSize, setPageSize] = useState(20)
@@ -112,6 +112,13 @@ const Down = () => {
     setPageSize(pageSize)
   }
 
+  return (
+    <Comment data={data} offset={offset} pageSize={pageSize} onChange={onChange}/>
+  )
+}
+
+export const Comment = (props) => {
+  const { data, offset, pageSize, onChange } = props
   return (
     <div>
       <div className='comment-header'>
@@ -143,7 +150,7 @@ const Down = () => {
   )
 }
 
-const CommentHot = React.memo((props) => {
+export const CommentHot = React.memo((props) => {
   const { title, comments } = props
   return (
     <div className='comment-body__section'>
@@ -161,7 +168,7 @@ const CommentHot = React.memo((props) => {
   )
 })
 
-const CommentItem = (props) => {
+export const CommentItem = (props) => {
   const { data } = props
   return (
     <li className='comment-item'>

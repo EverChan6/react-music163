@@ -1,129 +1,130 @@
-import React, { useState, useEffect } from 'react'
-import { Tabs, Pagination } from 'antd'
-import { getNewestAlbum, getNewAlbum } from '../api/album'
-import { PlayCircleOutlined } from '@ant-design/icons'
-import '../assets/css/album.scss'
+import { Table } from 'antd'
+import '@/assets/css/album.scss'
+import { ButtonGroup } from 'antd/lib/button/button-group'
+import { Comment, CommentHot, CommentItem } from './Song'
+import { getCommentOfAlbum } from '@/api/album.js'
+import { useState } from 'react'
+
+const IdContext = React.createContext('')
+
+const dataSource = [
+  {
+    key: '1',
+    name: '胡彦斌',
+    age: 32,
+    address: '西湖区湖底公园1号',
+  },
+  {
+    key: '2',
+    name: '胡彦祖',
+    age: 42,
+    address: '西湖区湖底公园1号',
+  },
+];
+
+const columns = [
+  {
+    title: '歌曲列表',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '时长',
+    dataIndex: 'age',
+    key: 'age',
+  },
+  {
+    title: '歌手',
+    dataIndex: 'address',
+    key: 'address',
+  },
+]
 
 
-const { TabPane } = Tabs
+const Left = () => {
+  const id = useContext(IdContext)
+  const [data, setData] = useState({})
+  const [offset, setOffset] = useState(0)
+  const [pageSize, setPageSize] = useState(20)
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getCommentOfAlbum({ id })
+      setData(res)
+    }
 
-const AlbumItem = (props) => {
-  const { it } = props
+    fetchData()
+  }, [offset, pageSize])
+
+  function onChange(page, pageSize) {
+    setOffset(page)
+    setPageSize(pageSize)
+  }
   return (
-    <div className='album' key={it.id}>
-      <div className='album-cover'>
-        <img src={it.picUrl} alt={it.name}/>
-        <PlayCircleOutlined className='play-btn' />
+    <div className='album-left'>
+      <div className='album-left__section section1'>
+        <img src="" alt=""/>
+        <div>
+          <div>
+            <h2>四海为家</h2>
+          </div>
+          <div>歌手：赵照</div>
+          <div>发行时间：2021-01-20</div>
+          <div>发行公司： 天津市武清区观照文化传媒工作室</div>
+          <ButtonGroup />
+        </div>
       </div>
-      <div className='album-name'>{it.name}</div>
-      <div className='album-artist'>{it.artists.map(artist => artist.name).join(' / ')}</div>
+      <div className='album-left__section section2'>
+        <div>专辑介绍：</div>
+        <p>你看 这野草 这蒲公英 这天上的云彩 这朔风里的雪花......他们何以为家？</p>
+      </div>
+      <div className='album-left__section section3'>
+        <div>
+          <h2>包含歌曲列表</h2>
+          <span>2首歌</span>
+          <a href="#">生成外链播放器</a>
+        </div>
+        <Table dataSource={dataSource} columns={columns} />
+      </div>
+      <div>
+        <Comment data={data} offset={offset} pageSize={pageSize} onChange={onChange} />
+      </div>
     </div>
   )
 }
 
-const HotAlbum = () => {
-  const [list, setList] = useState([])
-  useEffect(() => {
-    const fetchData = async () => {
-      const { albums } = await getNewestAlbum()
-      setList(albums)
-    }
-
-    fetchData()
-  }, [])
-
+export const ButtonGroup = (props) => {
   return (
-    <Tabs>
-      <TabPane tab='热门新碟' key='1' className='album-container'>
-        {
-          list.map(item => (
-            <AlbumItem it={item} key={item.id} />
-          ))
-        }
-      </TabPane>
-    </Tabs>
+    <div className='button-group'>
+      <Button type='primary' icon={<PlayCircleOutlined />}>播放</Button>
+      <Button icon={<FolderAddOutlined />}>收藏</Button>
+      <Button icon={<ShareAltOutlined />}>分享</Button>
+      <Button icon={<DownloadOutlined />}>下载</Button>
+      <Button icon={<MessageOutlined />}>16343</Button>
+    </div>
   )
 }
 
-const AllAlbum = () => {
-  const tabs = [{
-    text: '全部新碟',
-    key: 'ALL'
-  },
-  {
-    text: '华语',
-    key: 'ZH'
-  },
-  {
-    text: '欧美',
-    key: 'EA'
-  },
-  {
-    text: '韩国',
-    key: 'KR'
-  },
-  {
-    text: '日本',
-    key: 'JR'
-  }]
-
-  const [curTab, setCurTab] = useState('ALL')
-  const [newAlbum, setNewAlbum] = useState([])
-  const [current, setCurrent] = useState(1)
-  const [pageSize, setPageSize] = useState(30)
-  const [total, setTotal] = useState(0)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      let params = {
-        limit: pageSize,
-        offset: current - 1,
-        area: curTab
-      }
-      const { albums, total } = await getNewAlbum(params)
-      setNewAlbum(albums)
-      setTotal(total)
-    }
-
-    fetchData()
-  }, [curTab, current, pageSize])
-
-  function callback(key) {
-    setCurTab(key)
-    setCurrent(1) // 重置页码
-  }
-
-  function pageChange(page, pageSize) {
-    setCurrent(page)
-    setPageSize(pageSize)
-  }
-
+const Right = () => {
   return (
-    <>
-      <Tabs activeKey={curTab} onChange={callback}>
-        {
-          tabs.map(item => (
-            <TabPane tab={item.text} key={item.key} className='album-container'>
-              {
-                newAlbum.map(it => (
-                  <AlbumItem it={it} key={it.id} />
-                ))
-              }
-            </TabPane>
-          ))
-        }
-      </Tabs>
-      <Pagination className='pagenation' current={current} pageSize={pageSize} total={total} onChange={pageChange}/>
-    </>
+    <div className='album-right'></div>
   )
 }
 
 const Album = () => {
+  const { search } = useLocation()
+  const obj = {}
+  search.slice(1).split('&').forEach(item => {
+    let s = item.split('=')
+    obj[s[0]] = s[1]
+  })
   return (
-    <>
-      <HotAlbum />
-      <AllAlbum />
-    </>
+    <IdContext.Provider value={obj.id}>
+      <div className='album-page'>
+        <Left />
+        <Right />
+      </div>
+    </IdContext.Provider>
   )
 }
+
 export default Album

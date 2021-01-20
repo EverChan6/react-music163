@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from "react"
 import { useLocation } from "react-router-dom"
 import { Table, Button, Pagination } from 'antd'
 import { PlayCircleOutlined, DownloadOutlined, FolderAddOutlined, MessageOutlined, ShareAltOutlined, SmileOutlined, TrademarkOutlined, LikeOutlined } from "@ant-design/icons"
-import '../assets/css/toplist.scss'
-import { getSummary, getDetail, getCommentNew } from "../api/toplist"
+import '@/assets/css/discover/toplist.scss'
+import { getSummary, getDetail, getCommentNew } from "@/api/toplist"
 
 // !!一定是在组件外部创建，不能在任何一个组件内部创建
 const IdContext = React.createContext({})

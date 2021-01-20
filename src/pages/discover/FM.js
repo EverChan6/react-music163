@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { Button, Tabs, Progress } from 'antd'
-import { getList, getRecommend, getPToplist, getHot, getCatRecommend } from '../api/fm'
+import { getList, getRecommend, getPToplist, getHot, getCatRecommend } from '../../api/fm'
 import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons"
-import '../assets/css/fm.scss'
+import '@/assets/css/discover/fm.scss'
 
 const { TabPane } = Tabs
 

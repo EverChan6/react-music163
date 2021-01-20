@@ -16,3 +16,12 @@ export function getNewAlbum(params) {
     params
   })
 }
+
+// 专辑评论
+export function getCommentOfAlbum(params) {
+  return http.request({
+    url: '/comment/album',
+    method: 'get',
+    params
+  })
+}

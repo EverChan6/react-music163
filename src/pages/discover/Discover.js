@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { Carousel, Tabs, Button } from 'antd'
-import { getBanner, getHotRecommend, getRecommend, getAlbum, getTopList } from "../api/index"
-import { getNewestAlbum } from '../api/album'
-import { getDetail } from '../api/toplist'
+import { getBanner, getHotRecommend, getRecommend, getAlbum, getTopList } from "../../api/index"
+import { getNewestAlbum } from '@/api/album'
+import { getDetail } from '@/api/toplist'
 import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined, PlusOutlined } from "@ant-design/icons"
-import '../assets/index.scss'
+import '@/assets/css/index.scss'
 
 const { TabPane } = Tabs
 

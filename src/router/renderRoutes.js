@@ -1,6 +1,5 @@
 import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import Discover from '../pages/Discover'
 
 // 渲染路由的方法
 const renderRoutes = (routes, userInfo = {}, switchProps = {}) => routes
@@ -27,7 +26,6 @@ const renderRoutes = (routes, userInfo = {}, switchProps = {}) => routes
           )
         })
       }
-      {/* <Route component={Discover} /> */}
     </Switch>
   )
   : null
