@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: '/api',
   timeout: 10000,
-  withCredentials: true,
+  // withCredentials: true, // 前端设置了这个，后端的Access-Control-Allow-Origin字段就必须指定源地址，不能为*
   headers: {
     'Content-Type': 'application/json'
   }

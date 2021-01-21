@@ -15,10 +15,11 @@ module.exports = merge(webpackConfig, {
     historyApiFallback: true,
     publicPath: '/',
     proxy: {
-      '/': {
+      '/api': {
         target: 'http://localhost:3000',
         secure: false,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: {'^/api' : ''}
       }
     }
   },
