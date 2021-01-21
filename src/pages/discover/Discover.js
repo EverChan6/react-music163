@@ -22,8 +22,19 @@ const HeadCarousel = () => {
     fetchData()
   }, [])
 
-  function goTo(targetId) {
-    history.push('/song?id=' + targetId)
+  function goTo(targetId, targetType) {
+    switch (targetType) {
+      case 1:
+        history.push('/song?id=' + targetId)
+        break
+      case 10:
+        history.push('/album?id=' + targetId)
+        break
+      case 3000:
+        break
+      default:
+        break
+    }
   }
 
   return (
@@ -33,7 +44,7 @@ const HeadCarousel = () => {
           return (
             <div key={item.imageUrl}>
               <div style={{ backgroundImage: `url('${item.imageUrl}?imageView&blur=40x20')` }} className='carousel-banner'>
-                <img src={item.imageUrl} alt={item.typeTitle} onClick={() => goTo(item.targetId)}/>
+                <img src={item.imageUrl} alt={item.typeTitle} onClick={() => goTo(item.targetId, item.targetType)}/>
               </div>
             </div>
           )

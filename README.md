@@ -17,3 +17,5 @@ Poor English :)
 
 ## todo
 - DllReferencePlugin
+- React组件通信
+- Redux
