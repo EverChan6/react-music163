@@ -4,6 +4,8 @@ import { Carousel, Tabs, Button } from 'antd'
 import { getBanner, getHotRecommend, getRecommend, getAlbum, getTopList } from "../../api/index"
 import { getNewestAlbum } from '@/api/album'
 import { getDetail } from '@/api/toplist'
+import { getArtistList } from '@/api/artist'
+import { getPopularAnchor } from '@/api/fm'
 import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined, PlusOutlined } from "@ant-design/icons"
 import '@/assets/css/index.scss'
 
@@ -159,7 +161,7 @@ const NewAlbum = () => {
 
   return (
     <Tabs defaultActiveKey="1" tabBarExtraContent={operations}>
-      <TabPane className="tab-pane" tab='新碟上架' key="1">
+      <TabPane className="album-tabpane" tab='新碟上架' key="1">
         <LeftOutlined className='left-icon' onClick={() => carouselChange(false)}/>
         <Carousel dots={false} ref={carouselRef} className='new-album'>
           <div>
@@ -269,14 +271,90 @@ const RankList = () => {
   )
 }
 
+const Right = () => {
+  const [list, setList] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const { artists } = await getArtistList({ limit: 5 })
+      setList(artists)
+    }
+
+    fetchData()
+  }, [])
+
+  const [anchor, setAnchor] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: { list } } = await getPopularAnchor({ limit: 5 })
+      setAnchor(list)
+    }
+
+    fetchData()
+  }, [])
+  return (
+    <div className='index-page__right'>
+      <div className='index-page__right-section section1'>
+        <img src={require('@/assets/images/download1.png')} alt="下载客户端"/>
+        <p>PC 安卓 iPhone WP iPad Mac 六大客户端</p>
+      </div>
+      <div className='index-page__right-section section2'>
+        <p>登录网易云音乐，可以享受无限收藏的乐趣，并且无限同步到手机</p>
+        <Button>用户登录</Button>
+      </div>
+      <div className='index-page__right-section section3'>
+        <div className='section-title'>
+          <span>入驻歌手</span>
+          <span>查看全部&gt;</span>
+        </div>
+        <ul>
+          {
+            list.map(item => (
+              <LiItem key={item.id} name={item.name} picUrl={item.picUrl} alias={item.alias} />
+            ))
+          }
+        </ul>
+        <Button block href='https://music.163.com/st/musician' target='__brank'>申请成为网易音乐人</Button>
+      </div>
+      <div className='index-page__right-section section4'>
+        <div className='section-title'>
+          <span>热门主播</span>
+        </div>
+        <ul>
+          {
+            anchor.map(item => (
+              <LiItem key={item.id} name={item.nickName} picUrl={item.avatarUrl} />
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const LiItem = (props) => {
+  const { name, picUrl, alias } = props
+  return (
+    <li className='li-item'>
+      <img src={picUrl} alt={name}/>
+      <div>
+        <div>{name}</div>
+        <div>{alias?.join('/')}</div>
+      </div>
+    </li>
+  )
+}
+
 function Discover() {
   return (
-    <>
-      <HeadCarousel />
-      <HotRecommend />
-      <NewAlbum />
-      <RankList />
-    </>
+    <div className='index-page'>
+      <div className='index-page__left'>
+        <HeadCarousel />
+        <HotRecommend />
+        <NewAlbum />
+        <RankList />
+      </div>
+      <Right />
+    </div>
   )
 }
 

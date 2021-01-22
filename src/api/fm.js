@@ -51,3 +51,14 @@ export function getCatRecommend() {
   })
 }
 
+/**
+ * 电台 - 最热主播榜
+ */
+export function getPopularAnchor(params) {
+  return http.request({
+    url: '/dj/toplist/popular',
+    method: 'get',
+    params
+  })
+}
+
