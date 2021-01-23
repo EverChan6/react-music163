@@ -225,6 +225,10 @@ const RankList = () => {
     history.push('/discover/toplist?id='+ id || rankNamelist[0].id)
   }
 
+  function goToSong(id) {
+    history.push('/song?id=' + id)
+  }
+
   const operations = <Button type='text' onClick={goTo}>更多→</Button>
 
   return (
@@ -247,9 +251,9 @@ const RankList = () => {
                     {
                       songArr?.[index]?.playlist?.tracks?.slice(0, 10).map((it, idx) => {
                         return (
-                          <li key={idx} className='rank-list__li'>
+                          <li key={it.id} className='rank-list__li'>
                             <span className='rank-list__li-idx'>{idx+1}</span>
-                            <span className='rank-list__li-name'>{it.name}</span>
+                            <span className='rank-list__li-name' onClick={() => goToSong(it.id)}>{it.name}</span>
                             <div className='icon-group'>
                               <PlayCircleOutlined/>
                               <PlusOutlined style={{ margin: '0 10px' }}  />

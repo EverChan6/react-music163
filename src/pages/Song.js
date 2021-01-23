@@ -61,12 +61,12 @@ const Up = () => {
         </div>
         <div className='lyric'>
           {
-            lyric.slice(0, 12).map((item, index) => (
+            lyric?.slice(0, 12).map((item, index) => (
               <p key={index}>{item}</p>
             ))
           }
           {
-            showRest && lyric.slice(12).map((item, index) => (
+            showRest && lyric?.slice(12)?.map((item, index) => (
               <p key={index}>{item}</p>
             ))
           }
