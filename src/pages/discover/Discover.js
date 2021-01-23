@@ -8,6 +8,7 @@ import { getArtistList } from '@/api/artist'
 import { getPopularAnchor } from '@/api/fm'
 import { PlayCircleOutlined, UserOutlined, LeftOutlined, RightOutlined, FileAddOutlined, PlusOutlined } from "@ant-design/icons"
 import '@/assets/css/index.scss'
+import { Card } from '@/components/Card'
 
 const { TabPane } = Tabs
 
@@ -96,20 +97,10 @@ const HotRecommend = () => {
         <div className='recommend-tabpane'>
         {
           recommend.map(item => {
+            const { picUrl, name, playCount } = item
+            const obj = { picUrl, name, playCount }
             return (
-              <div className='card-container' key={item.id}>
-                <div className='card'>
-                  <img src={item.picUrl} alt={item.name}/>
-                  <div className='card-cover'>
-                    <div className='card-cover__left'>
-                      <UserOutlined />
-                      <span>{item.playCount}</span>
-                    </div>
-                    <PlayCircleOutlined style={{ cursor: 'pointer' }} />
-                  </div>
-                </div>
-                <div className='card-text'>{item.name}</div>
-              </div>
+              <Card key={item.id} {...obj} />
             )
           })
         }
@@ -127,7 +118,6 @@ const HotRecommend = () => {
     </Tabs>
   )
 }
-
 
 // 新碟上架
 const NewAlbum = () => {
@@ -313,7 +303,7 @@ const Right = () => {
         <ul>
           {
             list.map(item => (
-              <LiItem key={item.id} name={item.name} picUrl={item.picUrl} alias={item.alias} />
+              <LiItem key={item.id} id={item.accountId} name={item.name} picUrl={item.picUrl} alias={item.alias} />
             ))
           }
         </ul>
@@ -326,7 +316,7 @@ const Right = () => {
         <ul>
           {
             anchor.map(item => (
-              <LiItem key={item.id} name={item.nickName} picUrl={item.avatarUrl} />
+              <LiItem key={item.id} id={item.id} name={item.nickName} picUrl={item.avatarUrl} />
             ))
           }
         </ul>
@@ -336,9 +326,21 @@ const Right = () => {
 }
 
 const LiItem = (props) => {
-  const { name, picUrl, alias } = props
+  let history = useHistory()
+  const { name, picUrl, alias, id } = props
+
+  /**
+   * 跳转个人页
+   * @param {Number} id 用户ID
+   */
+  function goTo() {
+    if(id) {
+      history.push('/user/home?id=' + id)
+    }
+  }
+
   return (
-    <li className='li-item'>
+    <li className='li-item' onClick={() => goTo()}>
       <img src={picUrl} alt={name}/>
       <div>
         <div>{name}</div>
