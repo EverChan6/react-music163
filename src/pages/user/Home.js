@@ -156,7 +156,7 @@ const Created = () => {
     <>
       {
         list.map((it, idx) => (
-          <>
+          <div key={idx}>
             {
               it.length ? <div key={idx} className='user-home__created'>
                 <div className='user-home__created-title title'>{nickname}{idx === 0 ? '创建' : '收藏'}的歌单（{it.length}）</div>
@@ -175,7 +175,7 @@ const Created = () => {
                 </ul>
               </div> : ''
             }
-          </>
+          </div>
         ))
       }
       
