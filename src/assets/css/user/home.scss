@@ -1,5 +1,9 @@
 @import '@/assets/css/comp/card.scss';
 
+.card {
+  height: 140px;
+}
+
 .user-home__profile {
   display: flex;
   margin: 50px 0;
@@ -82,9 +86,6 @@
   }
   &-list {
     li {
-      list-style: decimal;
-      list-style-type:decimal;
-      list-style-position:inside;
       height: 38px;
       display: flex;
       align-items: center;
@@ -93,14 +94,17 @@
         background-color: #f7f7f7;
       }
       &:hover {
+        background: #e6e6e6;
         .hide-btns {
           display: block;
-          opacity: .5;
-          // z-index: -1;
         }
       }
       > * {
         margin-right: 10px;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }
@@ -111,17 +115,18 @@
 }
 
 .hide-btns {
-  display: none;
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  background-color: #e6e6e6;
+  z-index: 1;
+  right: 0;
+  top: 7px;
+  display: none;
+  width: 92px;
+  height: 20px;
+  overflow: hidden;
   > * {
     margin-right: 10px;
     vertical-align: middle;
+    cursor: pointer;
   }
 }
 

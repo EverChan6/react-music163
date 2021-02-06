@@ -266,6 +266,7 @@ const RankList = () => {
 }
 
 const Right = () => {
+  let history = useHistory()
   const [list, setList] = useState([])
   useEffect(() => {
     const fetchData = async () => {
@@ -285,6 +286,11 @@ const Right = () => {
 
     fetchData()
   }, [])
+
+  function goTo() {
+    history.push('/discover/artist')
+  }
+
   return (
     <div className='index-page__right'>
       <div className='index-page__right-section section1'>
@@ -298,7 +304,7 @@ const Right = () => {
       <div className='index-page__right-section section3'>
         <div className='section-title'>
           <span>入驻歌手</span>
-          <span>查看全部&gt;</span>
+          <span onClick={goTo} style={{ cursor: 'pointer' }}>查看全部&gt;</span>
         </div>
         <ul>
           {

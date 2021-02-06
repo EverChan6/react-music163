@@ -84,83 +84,102 @@ const Rank = () => {
       }
       const res = await getUserRecord(params)
       let data = type ? res.weekData : res.allData
-      setData(data)
+      setData(data.slice(0, 10))
     }
 
     fetchData()
   }, [uid, type])
   return (
-    <div className='user-home__rank'>
-      <div className='user-home__rank-title title'>
-        <div className='rank-title'>听歌排行</div>
-        <span>累积听歌{data.length}首</span>
-        <Tooltip title="实际播放时间过短的歌曲将不纳入计算。">
-          <InfoCircleOutlined />
-        </Tooltip>
-        <div className='time-btn'>
-          <span className={type === 1 ? 'active' : 'inactive'} onClick={() => setType(1)}>最近一周</span>
-          <span className={type === 0 ? 'active' : 'inactive'} onClick={() => setType(0)}>所有时间</span>
+    <>
+      {
+        data.length && <div className='user-home__rank'>
+          <div className='user-home__rank-title title'>
+            <div className='rank-title'>听歌排行</div>
+            <span>累积听歌{data.length}首</span>
+            <Tooltip title="实际播放时间过短的歌曲将不纳入计算。">
+              <InfoCircleOutlined />
+            </Tooltip>
+            <div className='time-btn'>
+              <span className={type === 1 ? 'active' : 'inactive'} onClick={() => setType(1)}>最近一周</span>
+              <span className={type === 0 ? 'active' : 'inactive'} onClick={() => setType(0)}>所有时间</span>
+            </div>
+          </div>
+          <ol className='user-home__rank-list'>
+            {
+              data.map(item => (
+                <li key={item.song.id}>
+                  <PlayCircleOutlined />
+                  <span>{item.song.name}</span>
+                  -
+                  <span>{item.song.ar.map(it => it.name).join('/')}</span>
+                  <div className='hide-btns'>
+                    <PlusOutlined />
+                    <FolderAddOutlined />
+                    <ShareAltOutlined />
+                    <DownloadOutlined />
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <Button type='text' style={{ float: 'right' }}>查看更多&gt;</Button>
         </div>
-      </div>
-      <ol className='user-home__rank-list'>
-        {
-          data.map(item => (
-            <li key={item.song.id}>
-              <PlayCircleOutlined />
-              <span>{item.song.name}</span>
-              -
-              <span>{item.song.ar.map(it => it.name).join('/')}</span>
-              <div className='hide-btns'>
-                <PlusOutlined />
-                <FolderAddOutlined />
-                <ShareAltOutlined />
-                <DownloadOutlined />
-              </div>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+      }
+    </>
   )
 }
 
-// 用户创建的歌单
+// 用户创建的歌单/用户收藏的歌单
 const Created = () => {
   const { uid, nickname } = useContext(IdContext)
   const [list, setList] = useState([])
+
   useEffect(() => {
     const fetchData = async () => {
-      const { playlist } = await getUserPlaylist({ uid})
-      setList(playlist)
+      const { playlist } = await getUserPlaylist({ uid })
+      let arr = [], a = [], b = []
+      playlist.forEach(item => {
+        if(item.creator.nickname === nickname) {
+          a.push(item)
+        } else {
+          b.push(item)
+        }
+      })
+      arr = [a, b]
+      setList(arr)
     }
 
     fetchData()
-  }, [])
-  return (
-    <div className='user-home__created'>
-      <div className='user-home__created-title title'>{nickname}创建的歌单（{list.length}）</div>
-      <ul>
-        {
-          list.map(item => {
-            const { coverImgUrl, name, playCount } = item
-            const obj = { picUrl: coverImgUrl, name, playCount }
-            return (
-              <li key={item.id}>
-                <Card key={item.id} {...obj}/>
-              </li>
-            )
-          })
-        }
-      </ul>
-    </div>
-  )
-}
+  }, [uid, nickname])
 
-// 用户收藏的歌单
-const Collect = () => {
   return (
-    <div>
-    </div>
+    <>
+      {
+        list.map((it, idx) => (
+          <>
+            {
+              it.length ? <div key={idx} className='user-home__created'>
+                <div className='user-home__created-title title'>{nickname}{idx === 0 ? '创建' : '收藏'}的歌单（{it.length}）</div>
+                <ul>
+                  {
+                    it.map(item => {
+                      const { coverImgUrl, name, playCount } = item
+                      const obj = { picUrl: coverImgUrl, name, playCount }
+                      return (
+                        <li key={item.id}>
+                          <Card key={item.id} {...obj}/>
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+              </div> : ''
+            }
+          </>
+        ))
+      }
+      
+    </>
   )
 }
 
