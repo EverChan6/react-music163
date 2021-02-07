@@ -46,6 +46,11 @@ const routes = [
     component: React.lazy(() => import('../pages/Album'))
   },
   {
+    path: '/playlist',
+    exact: true,
+    component: React.lazy(() => import('../pages/Playlist'))
+  },
+  {
     path: '/user/home',
     exact: true,
     component: React.lazy(() => import('../pages/user/Home'))

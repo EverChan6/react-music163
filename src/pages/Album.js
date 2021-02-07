@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { Table, Button } from 'antd'
 import { PlayCircleOutlined, PlusOutlined, DownloadOutlined, FolderAddOutlined, MessageOutlined, ShareAltOutlined, SmileOutlined, TrademarkOutlined, LikeOutlined } from "@ant-design/icons"
 import '@/assets/css/album.scss'
-import { Comment, CommentHot, CommentItem } from './Song'
+import { Comment } from './Song'
 import { getContentOfAlbum, getCommentOfAlbum, getArtistAlbum } from '@/api/album.js'
 
 const IdContext = React.createContext('')
@@ -169,7 +169,7 @@ const Album = () => {
     let s = item.split('=')
     obj[s[0]] = s[1]
   })
-  console.log(123123123)
+  
   const [singerId, setSingerId] = useState('')
   const getSingerId = useCallback((id) => setSingerId(id), [])
   return (
