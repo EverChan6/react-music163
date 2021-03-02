@@ -6,7 +6,7 @@ import { MyButtonGroup } from './Album'
 import { PlayCircleOutlined, PlusOutlined, DownloadOutlined, FolderAddOutlined, MessageOutlined, ShareAltOutlined, SmileOutlined, TrademarkOutlined, LikeOutlined } from "@ant-design/icons"
 import { getDetail, getComment } from '@/api/toplist'
 import { getPlayList } from '@/api/index'
-import '@/assets/css/album.scss'
+import '@/assets/css/playlist.scss'
 
 const IdContext = React.createContext('')
 
@@ -58,8 +58,13 @@ const Left = (props) => {
   const [offset, setOffset] = useState(0)
   const [pageSize, setPageSize] = useState(20)
   useEffect(() => {
+    let params = {
+      id,
+      limit: pageSize,
+      offset
+    }
     const fetchData = async () => {
-      const res = await getComment({ id })
+      const res = await getComment(params)
       setData(res)
     }
 
@@ -67,21 +72,21 @@ const Left = (props) => {
   }, [id, offset, pageSize])
 
 
-  const onChange = useCallback((page, pageSize) => {
-    setOffset(page)
+  const onChange = useCallback((offset, pageSize) => {
+    setOffset(offset)
     setPageSize(pageSize)
-  }, [])
+  }, [offset, pageSize])
 
   return (
     <div className='album-left'>
       <div className='album-left__section section1'>
-        <img src={playlist?.coverImgUrl} alt={playlist?.name}/>
+        <img src={playlist?.coverImgUrl} alt={playlist?.name} style={{ border: '1px solid #ccc', padding: '5px' }}/>
         <div>
           <div>
             <h2>{playlist?.name}</h2>
           </div>
-          <div style={{display: 'flex', alignItems: 'center'}}>
-            <img style={{width: '35px', height: '35px'}} src={playlist?.creator?.avatarUrl} alt={playlist?.creator?.nickname}/>
+          <div className='section1-div'>
+            <img src={playlist?.creator?.avatarUrl} alt={playlist?.creator?.nickname}/>
             <div>{playlist?.creator?.nickname}</div>
             <span>{new Date(playlist?.createTime).toLocaleDateString()}创建</span>
           </div>
@@ -100,17 +105,19 @@ const Left = (props) => {
         </div>
       </div>
       <div className='album-left__section section3'>
-        <div className='section3-title'>
+        <div className='section3-table-title'>
           <h2>歌曲列表</h2>
           <span>{playlist?.tracks?.length}首歌</span>
-          <a href="#">生成外链播放器</a>
-          <span>播放：{playlist?.playCount}次</span>
+          <div>
+            <a href="#">生成外链播放器</a>
+            <span className='play-time'>播放：{playlist?.playCount}次</span>
+          </div>
         </div>
         <Table dataSource={playlist?.tracks} columns={columns} rowKey='id' pagination={false} />
       </div>
       <div style={{ textAlign: 'center' }}>
         <div>查看更多内容，请下载客户端</div>
-        <Button shape="round" style={{ backgroundImage: 'linear-gradient(90deg,#ff5a4c 0%,#ff1d12 100%)', color: '#fff' }}>立即下载</Button>
+        <Button shape="round" style={{ margin: '10px 0', border: 'none', backgroundImage: 'linear-gradient(90deg,#ff5a4c 0%,#ff1d12 100%)', color: '#fff' }}>立即下载</Button>
       </div>
       <div>
         <Comment data={data} offset={offset} pageSize={pageSize} onChange={onChange} />
