@@ -49,6 +49,10 @@
   div {
     display: inline-block;
     padding: 0 40px 0 20px;
+    cursor: pointer;
+    &:hover * {
+      color: #0c73c2;
+    }
     &:nth-child(1) {
       padding-left: 0;
     }

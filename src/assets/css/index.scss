@@ -70,11 +70,13 @@ $carouselHeight: 300px;
 }
 
 .top-list {
-  display: flex;
+  white-space: nowrap;
   &__item {
-    flex: 1;
+    display: inline-block;
+    width: calc(100% / 3);
     padding: 15px;
     border: 1px solid #eee;
+    box-sizing: border-box;
     cursor: pointer;
     &-cover {
       display: flex;

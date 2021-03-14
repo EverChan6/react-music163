@@ -33,3 +33,15 @@ export function getUserRecord(params) {
     params
   })
 }
+
+
+/**
+ * 获取用户动态
+ */
+ export function getUserEvent(params) {
+  return http.request({
+    url: '/user/event',
+    method: 'get',
+    params
+  })
+}
