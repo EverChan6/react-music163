@@ -1,7 +1,7 @@
 import React, { createElement, useState, useEffect, useContext } from 'react'
 import { useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { Comment, Button, Tag, Tooltip, Avatar } from 'antd'
-import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
+import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
 import '@/assets/css/user/home.scss'
 import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent } from '@/api/user'
 import { Card } from '@/components/Card';
@@ -244,7 +244,7 @@ const Event = () => {
     <>
       {
         events.map(item => {
-          let { json, user, eventTime, info } = item
+          let { json, user, eventTime, info, pics } = item
           json = JSON.parse(json)
           eventTime = new Date(eventTime).toLocaleDateString()
           let { likedCount, shareCount, commentCount } = info
@@ -265,6 +265,15 @@ const Event = () => {
                   <p>
                     {json.msg}
                   </p>
+                  {
+                    json.video && <VideoComp video={json.video} />
+                  }
+                  {
+                    json.resource && <ResourceComp resource={json.resource} pics={pics}/>
+                  }
+                  {
+                    json.event && <EventComp event={json.event} nickname={user.nickname}/>
+                  }
                 </>
               }
             />
@@ -272,6 +281,103 @@ const Event = () => {
         })
       }
     </>
+  )
+}
+
+const VideoComp = (prop) => {
+  let { video } = prop
+  return (
+    <div style={{backgroundImage: `url(${video.coverUrl})`}} className='cover-div'>
+      <div className='cover-title'>
+        <span>{video.title}</span>
+        <span> - by {video.creator.nickname}</span>
+      </div>
+      <div className='cover-playbtn'>
+        <PlayCircleOutlined className='play-btn' />
+      </div>
+      <div className='cover-info'>
+        <div>
+          <CaretRightOutlined />
+          <span>{video.playTime}</span>
+        </div>
+        <div>
+          <CaretRightOutlined />
+          <span>{video.duration}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const EventComp = (prop) => {
+  let { event: { json, lotteryEventData, pics, info }, nickname } = prop
+  json = JSON.parse(json)
+  let lottery = `${lotteryEventData?.title}(${lotteryEventData?.status === 2 ? '已开奖': '未开奖'})`
+  let { likedCount, shareCount, commentCount } = info
+  return (
+    <div className='event-div'>
+      <div className='event-msg'>
+        <a style={{color: '#0c73c2'}}>@{nickname} </a>
+        分享单曲：
+        <a style={{color: '#0c73c2'}}>{lottery}</a>
+        {json.msg}
+      </div>
+      <div className='event-div__album'>
+        <div style={{backgroundImage: `url(${json.song.album.picUrl})`}}>
+          <PlayCircleOutlined className='play-btn' />
+        </div>
+        <div>
+          <div>{json.song.name}</div>
+          <div>
+            {
+              json.song.artists.map(item => item.name).join('/')
+            }
+          </div>
+        </div>
+      </div>
+      {
+        pics?.map((item, idx) => (
+          <img className='pic' key={idx} src={item.originUrl} alt={item.originUrl}/>
+        ))
+      }
+      <div>
+        <Tooltip>
+          <span className='action-btn'>
+            {createElement(LikeFilled)}
+            <span>({likedCount})</span>
+          </span>
+        </Tooltip>
+        <Tooltip>
+          <span className='action-btn action'>
+            转发
+            <span>({shareCount})</span>
+          </span>
+        </Tooltip>
+        <span className='action-btn action'>评论({commentCount})</span>
+      </div>
+    </div>
+  )
+}
+
+const ResourceComp = (prop) => {
+  let { resource, pics } = prop
+  return (
+    <div className='resource-div'>
+      <div className='resource-div__title'>
+        {
+          resource.img80x80 ? <img src={resource.img80x80} alt={resource.img80x80}/> :
+            <img src={resource.coverImgUrl} alt={resource.coverImgUrl}/>
+        }
+        {
+          resource.title ? <div>{resource.title}</div> : <div>歌手：<span>{resource.name}</span></div>
+        }
+      </div>
+      {
+        pics.map((item, idx) => (
+          <img className='pic' key={idx} src={item.originUrl} alt={item.originUrl}/>
+        ))
+      }
+    </div>
   )
 }
 
