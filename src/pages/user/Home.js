@@ -1,10 +1,10 @@
-import React, { createElement, useState, useEffect, useContext } from 'react'
+import React, { createElement, useState, useEffect, useContext, useCallback, useMemo } from 'react'
 import { useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { Comment, Button, Tag, Tooltip, Avatar } from 'antd'
-import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
+import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, ToTopOutlined, SendOutlined, CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
 import '@/assets/css/user/home.scss'
-import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent } from '@/api/user'
-import { Card } from '@/components/Card';
+import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo } from '@/api/user'
+import { Card } from '@/components/Card'
 
 const IdContext = React.createContext('')
 
@@ -199,16 +199,18 @@ const Event = () => {
   const [likes, setLikes] = useState(0)
   const [transmits, setTransmits] = useState(0)
   const [action, setAction] = useState(null)
-  const [events, setEvents] = useState([])
+  const [data, setData] = useState({})
+  const [more, setMore] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
-      const { events } = await getUserEvent({ uid })
-      setEvents(events)
+      const data = await getUserEvent({ uid })
+      setData(data)
+      setMore(data.more)
     }
 
-    fetchData()
-  }, [uid])
+    more && fetchData()
+  }, [uid, more])
 
   const like = () => {
     setLikes(1)
@@ -242,14 +244,16 @@ const Event = () => {
 
   return (
     <>
+      <div className='user-home__event-title title'>TA的动态({data.size})</div>
       {
-        events.map(item => {
+        data?.events?.map(item => {
           let { json, user, eventTime, info, pics } = item
           json = JSON.parse(json)
           eventTime = new Date(eventTime).toLocaleDateString()
           let { likedCount, shareCount, commentCount } = info
           return (
             <Comment
+              className='event-li'
               key={item.id}
               actions={actions(likedCount, shareCount, commentCount)}
               author={<a>{user.nickname}</a>}
@@ -286,26 +290,66 @@ const Event = () => {
 
 const VideoComp = (prop) => {
   let { video } = prop
+
+  const [mediaType, setMediaType] = useState(0)
+  const [videoUrl, setVideoUrl] = useState(null)
+  const [videoId, setVideoId] = useState(null)
+
+  function setVideoInfo(mediaType) {
+    setMediaType(mediaType)
+    setVideoId(video.videoId)
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { urls } = await getVideo({ id: videoId })
+      setVideoUrl(urls[0].url)
+    }
+
+    videoId && fetchData()
+  }, [videoId])
+
   return (
-    <div style={{backgroundImage: `url(${video.coverUrl})`}} className='cover-div'>
-      <div className='cover-title'>
-        <span>{video.title}</span>
-        <span> - by {video.creator.nickname}</span>
-      </div>
-      <div className='cover-playbtn'>
-        <PlayCircleOutlined className='play-btn' />
-      </div>
-      <div className='cover-info'>
-        <div>
-          <CaretRightOutlined />
-          <span>{video.playTime}</span>
-        </div>
-        <div>
-          <CaretRightOutlined />
-          <span>{video.duration}</span>
-        </div>
-      </div>
-    </div>
+    <>
+      {
+        mediaType === 0 ? (
+          <div style={{backgroundImage: `url(${video.coverUrl})`}} className='cover-div'>
+            <div className='cover-title'>
+              <span>{video.title}</span>
+              <span> - by {video.creator.nickname}</span>
+            </div>
+            <div className='cover-playbtn'>
+              <PlayCircleOutlined className='play-btn' onClick={() => setVideoInfo(1)} />
+            </div>
+            <div className='cover-info'>
+              <div>
+                <CaretRightOutlined />
+                <span>{video.playTime}</span>
+              </div>
+              <div>
+                <CaretRightOutlined />
+                <span>{video.duration}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className='video-title'>
+              <div>
+                <ToTopOutlined />
+                <span onClick={() => setMediaType(0)}>收起</span>
+              </div>
+              <div>
+                <SendOutlined />
+                <span>{video.title}</span>
+                <span>{video.creator.nickname}</span>
+              </div>
+            </div>
+            <video src={videoUrl} autoPlay controls width='570px' height='320px'></video>
+          </div>
+        )
+      }
+    </>
   )
 }
 

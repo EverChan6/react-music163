@@ -45,3 +45,14 @@ export function getUserRecord(params) {
     params
   })
 }
+
+/**
+ * 获取视频播放地址
+ */
+ export function getVideo(params) {
+  return http.request({
+    url: '/video/url',
+    method: 'get',
+    params
+  })
+}
