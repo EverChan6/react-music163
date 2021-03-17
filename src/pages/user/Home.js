@@ -3,8 +3,9 @@ import { useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { Comment, Button, Tag, Tooltip, Avatar } from 'antd'
 import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, ToTopOutlined, SendOutlined, CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
 import '@/assets/css/user/home.scss'
-import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo } from '@/api/user'
+import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo, getCommentOfEvent } from '@/api/user'
 import { Card } from '@/components/Card'
+import { Comment as MyComment } from '../Song'
 
 const IdContext = React.createContext('')
 
@@ -201,6 +202,9 @@ const Event = () => {
   const [action, setAction] = useState(null)
   const [data, setData] = useState({})
   const [more, setMore] = useState(true)
+  const [showComment, setShowComment] = useState(false)
+  const [threadId, setThreadId] = useState(null)
+  const [commentData, setCommentData] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,6 +215,20 @@ const Event = () => {
 
     more && fetchData()
   }, [uid, more])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCommentOfEvent({ threadId })
+      setCommentData(data)
+    }
+
+    threadId && fetchData()
+  }, [threadId])
+
+  const getEventComment = (threadId) => {
+    setShowComment(val => !val)
+    setThreadId(threadId)
+  }
 
   const like = () => {
     setLikes(1)
@@ -224,7 +242,7 @@ const Event = () => {
     setAction('disliked')
   }
 
-  const actions = (likes, transmits, commentCount) => (
+  const actions = (likes, transmits, commentCount, threadId) => (
     [
       <Tooltip key="comment-basic-like" title="Like">
         <span onClick={like}>
@@ -238,7 +256,7 @@ const Event = () => {
           <span className="comment-action">({transmits})</span>
         </span>
       </Tooltip>,
-      <span key="comment-basic-reply-to">评论({commentCount})</span>,
+      <span key="comment-basic-reply-to" onClick={() => getEventComment(threadId)}>评论({commentCount})</span>,
     ]
   )
 
@@ -247,40 +265,48 @@ const Event = () => {
       <div className='user-home__event-title title'>TA的动态({data.size})</div>
       {
         data?.events?.map(item => {
-          let { json, user, eventTime, info, pics } = item
+          let { json, user, eventTime, info, pics, lotteryEventData } = item
           json = JSON.parse(json)
           eventTime = new Date(eventTime).toLocaleDateString()
           let { likedCount, shareCount, commentCount } = info
           return (
-            <Comment
-              className='event-li'
-              key={item.id}
-              actions={actions(likedCount, shareCount, commentCount)}
-              author={<a>{user.nickname}</a>}
-              avatar={
-                <Avatar
-                  src={user.avatarUrl}
-                  alt={user.nickname}
-                />
+            <>
+              <Comment
+                className='event-li'
+                key={item.id}
+                actions={actions(likedCount, shareCount, commentCount, info.threadId)}
+                author={<a style={{color: '#0c73c2', fontSize: '14px'}}>{user.nickname}</a>}
+                avatar={
+                  <Avatar
+                    src={user.avatarUrl}
+                    alt={user.nickname}
+                  />
+                }
+                content={
+                  <>
+                    <span style={{color: '#999', fontSize: '12px'}}>{eventTime}</span>
+                    <p>
+                      {json.msg}
+                    </p>
+                    {
+                      json.video && <VideoComp video={json.video} />
+                    }
+                    {
+                      json.resource && <ResourceComp resource={json.resource} pics={pics}/>
+                    }
+                    {
+                      json.event && <EventComp event={json.event} nickname={user.nickname}/>
+                    }
+                    {
+                      json.song && <EventComp event={{ json, lotteryEventData, info, pics }}/>
+                    }
+                  </>
+                }
+              />
+              {
+                showComment && <MyComment data={commentData} offset={0} pageSize={10} onChange={() => {}} />
               }
-              content={
-                <>
-                  <span>{eventTime}</span>
-                  <p>
-                    {json.msg}
-                  </p>
-                  {
-                    json.video && <VideoComp video={json.video} />
-                  }
-                  {
-                    json.resource && <ResourceComp resource={json.resource} pics={pics}/>
-                  }
-                  {
-                    json.event && <EventComp event={json.event} nickname={user.nickname}/>
-                  }
-                </>
-              }
-            />
+            </>
           )
         })
       }
@@ -355,18 +381,31 @@ const VideoComp = (prop) => {
 
 const EventComp = (prop) => {
   let { event: { json, lotteryEventData, pics, info }, nickname } = prop
-  json = JSON.parse(json)
-  let lottery = `${lotteryEventData?.title}(${lotteryEventData?.status === 2 ? '已开奖': '未开奖'})`
+  json = typeof json === 'object' ? json: JSON.parse(json)
+  let lottery = lotteryEventData?.title ? (`${lotteryEventData?.title}(${lotteryEventData?.status === 2 ? '已开奖': '未开奖'})`) : ''
   let { likedCount, shareCount, commentCount } = info
   return (
-    <div className='event-div'>
+    <div className='event-div' style={{backgroundColor: nickname ? '#f5f5f5' : '#ffffff'}}>
       <div className='event-msg'>
-        <a style={{color: '#0c73c2'}}>@{nickname} </a>
-        分享单曲：
-        <a style={{color: '#0c73c2'}}>{lottery}</a>
-        {json.msg}
+        {
+          nickname ? (
+            <>
+              <a style={{color: '#0c73c2'}}>@{nickname} </a>
+              分享单曲：
+            </>
+          ) : ''
+        }
+        
+        {
+          nickname ? (
+            <>
+              <a style={{color: '#0c73c2'}}>{lottery}</a>
+              {json.msg}
+            </>
+          ) : ''
+        }
       </div>
-      <div className='event-div__album'>
+      <div className='event-div__album' style={{backgroundColor: nickname ? '#ffffff' : '#f5f5f5'}}>
         <div style={{backgroundImage: `url(${json.song.album.picUrl})`}}>
           <PlayCircleOutlined className='play-btn' />
         </div>
@@ -384,21 +423,23 @@ const EventComp = (prop) => {
           <img className='pic' key={idx} src={item.originUrl} alt={item.originUrl}/>
         ))
       }
-      <div>
-        <Tooltip>
-          <span className='action-btn'>
-            {createElement(LikeFilled)}
-            <span>({likedCount})</span>
-          </span>
-        </Tooltip>
-        <Tooltip>
-          <span className='action-btn action'>
-            转发
-            <span>({shareCount})</span>
-          </span>
-        </Tooltip>
-        <span className='action-btn action'>评论({commentCount})</span>
-      </div>
+      {
+        nickname && <div>
+          <Tooltip>
+            <span className='action-btn'>
+              {createElement(LikeFilled)}
+              <span>({likedCount})</span>
+            </span>
+          </Tooltip>
+          <Tooltip>
+            <span className='action-btn action'>
+              转发
+              <span>({shareCount})</span>
+            </span>
+          </Tooltip>
+          <span className='action-btn action'>评论({commentCount})</span>
+        </div>
+      }
     </div>
   )
 }
@@ -410,10 +451,10 @@ const ResourceComp = (prop) => {
       <div className='resource-div__title'>
         {
           resource.img80x80 ? <img src={resource.img80x80} alt={resource.img80x80}/> :
-            <img src={resource.coverImgUrl} alt={resource.coverImgUrl}/>
+            <img src={resource.coverImgUrl || resource?.mlogBaseData?.coverUrl} alt={resource.coverImgUrl || resource?.mlogBaseData?.coverUrl}/>
         }
         {
-          resource.title ? <div>{resource.title}</div> : <div>歌手：<span>{resource.name}</span></div>
+          resource.title ? <div>{resource.title}</div> : <div>歌手：<span>{resource.name || resource?.userProfile?.nickname}</span></div>
         }
       </div>
       {

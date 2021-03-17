@@ -47,6 +47,17 @@ export function getUserRecord(params) {
 }
 
 /**
+ * 获取动态评论
+ */
+ export function getCommentOfEvent(params) {
+  return http.request({
+    url: '/comment/event',
+    method: 'get',
+    params
+  })
+}
+
+/**
  * 获取视频播放地址
  */
  export function getVideo(params) {

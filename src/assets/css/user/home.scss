@@ -1,5 +1,9 @@
 @import '@/assets/css/comp/card.scss';
 
+.ant-avatar-image {
+  border: 1px solid #eee;
+}
+
 .card {
   height: 140px;
 }
@@ -211,9 +215,9 @@
 }
 
 .event-div {
-  padding: 10px;
+  // padding: 10px;
   margin: 10px 0;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
   &__album {
     display: flex;
     padding: 8px;
