@@ -1,11 +1,16 @@
 import React, { createElement, useState, useEffect, useContext, useCallback, useMemo } from 'react'
 import { useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { Comment, Button, Tag, Tooltip, Avatar } from 'antd'
-import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, ToTopOutlined, SendOutlined, CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined, InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined } from "@ant-design/icons"
+import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, ToTopOutlined, SendOutlined,
+   CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined,
+  InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined, UpOutlined } from "@ant-design/icons"
 import '@/assets/css/user/home.scss'
-import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo, getCommentOfEvent } from '@/api/user'
+import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo, getCommentOfEvent, getFollows } from '@/api/user'
 import { Card } from '@/components/Card'
-import { Comment as MyComment } from '../Song'
+import {
+  CommentArea,
+  CommentList
+} from '@/components/MyComment'
 
 const IdContext = React.createContext('')
 
@@ -200,16 +205,28 @@ const Event = () => {
   const [likes, setLikes] = useState(0)
   const [transmits, setTransmits] = useState(0)
   const [action, setAction] = useState(null)
-  const [data, setData] = useState({})
+  const [eventData, setEventData] = useState({})
   const [more, setMore] = useState(true)
-  const [showComment, setShowComment] = useState(false)
   const [threadId, setThreadId] = useState(null)
-  const [commentData, setCommentData] = useState({})
+  const [follow, setFollow] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { follow } = await getFollows({ uid })
+      setFollow(follow)
+    }
+
+    fetchData()
+  }, [uid])
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getUserEvent({ uid })
-      setData(data)
+      data?.events.forEach(item => {
+        item.showComment = false
+        item.commentData = {}
+      })
+      setEventData(data)
       setMore(data.more)
     }
 
@@ -218,15 +235,34 @@ const Event = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getCommentOfEvent({ threadId })
-      setCommentData(data)
+      const res = await getCommentOfEvent({ threadId })
+      res.comments = res.comments.slice(0, 10) // 先展示10条，其余的收起
+      setEventData(data => {
+        let eventData = JSON.parse(JSON.stringify(data)) // !：更新对象中的某一项时，即使这个某一项是个数组，也要把整个外层对象更新，视图才会更新
+        for(let i = 0; i < eventData.events.length; i ++) {
+          if(eventData.events[i].info.threadId === threadId) {
+            eventData.events[i].commentData = res
+            break
+          }
+        }
+        return eventData
+      })
     }
 
     threadId && fetchData()
   }, [threadId])
 
-  const getEventComment = (threadId) => {
-    setShowComment(val => !val)
+  function showCommentItem(threadId) {
+    setEventData(data => {
+      let eventData = JSON.parse(JSON.stringify(data)) // !：更新对象中的某一项时，即使这个某一项是个数组，也要把整个外层对象更新，视图才会更新
+      for(let i = 0; i < eventData.events.length; i ++) {
+        if(eventData.events[i].info.threadId === threadId) {
+          eventData.events[i].showComment = !eventData.events[i].showComment
+          break
+        }
+      }
+      return eventData
+    })
     setThreadId(threadId)
   }
 
@@ -256,60 +292,89 @@ const Event = () => {
           <span className="comment-action">({transmits})</span>
         </span>
       </Tooltip>,
-      <span key="comment-basic-reply-to" onClick={() => getEventComment(threadId)}>评论({commentCount})</span>,
+      <span key="comment-basic-reply-to" onClick={() => showCommentItem(threadId)}>评论({commentCount})</span>,
     ]
   )
 
   return (
     <>
-      <div className='user-home__event-title title'>TA的动态({data.size})</div>
-      {
-        data?.events?.map(item => {
-          let { json, user, eventTime, info, pics, lotteryEventData } = item
-          json = JSON.parse(json)
-          eventTime = new Date(eventTime).toLocaleDateString()
-          let { likedCount, shareCount, commentCount } = info
-          return (
-            <>
-              <Comment
-                className='event-li'
-                key={item.id}
-                actions={actions(likedCount, shareCount, commentCount, info.threadId)}
-                author={<a style={{color: '#0c73c2', fontSize: '14px'}}>{user.nickname}</a>}
-                avatar={
-                  <Avatar
-                    src={user.avatarUrl}
-                    alt={user.nickname}
+      <div className='user-home__event-title title'>TA的动态({eventData.size})</div>
+      <div className='user-home__event'>
+        <div className='user-home__event-left'>
+          {
+            eventData?.events?.map(item => {
+              let { json, user, eventTime, info, pics, lotteryEventData } = item
+              json = JSON.parse(json)
+              eventTime = new Date(eventTime).toLocaleDateString()
+              let { likedCount, shareCount, commentCount } = info
+              return (
+                <div key={item.id}>
+                  <Comment
+                    className='event-li'
+                    actions={actions(likedCount, shareCount, commentCount, info.threadId)}
+                    author={<a style={{color: '#0c73c2', fontSize: '14px'}}>{user.nickname}</a>}
+                    avatar={
+                      <Avatar
+                        src={user.avatarUrl}
+                        alt={user.nickname}
+                      />
+                    }
+                    content={
+                      <>
+                        <span style={{color: '#999', fontSize: '12px'}}>{eventTime}</span>
+                        <p>
+                          {json.msg}
+                        </p>
+                        {
+                          json.video && <VideoComp video={json.video} />
+                        }
+                        {
+                          json.resource && <ResourceComp resource={json.resource} pics={pics}/>
+                        }
+                        {
+                          json.event && <EventComp event={json.event} nickname={user.nickname}/>
+                        }
+                        {
+                          json.song && <EventComp event={{ json, lotteryEventData, info, pics }}/>
+                        }
+                      </>
+                    }
                   />
-                }
-                content={
-                  <>
-                    <span style={{color: '#999', fontSize: '12px'}}>{eventTime}</span>
-                    <p>
-                      {json.msg}
-                    </p>
-                    {
-                      json.video && <VideoComp video={json.video} />
-                    }
-                    {
-                      json.resource && <ResourceComp resource={json.resource} pics={pics}/>
-                    }
-                    {
-                      json.event && <EventComp event={json.event} nickname={user.nickname}/>
-                    }
-                    {
-                      json.song && <EventComp event={{ json, lotteryEventData, info, pics }}/>
-                    }
-                  </>
-                }
-              />
+                  {
+                    item.showComment && (
+                      <div className='comment-list'>
+                        <CommentArea />
+                        <CommentList data={item.commentData}/>
+                        <div className='see-more'>
+                          <div>后面还有{}条评论，<a >查看更多&gt;</a></div>
+                          <span>收起<UpOutlined /></span>
+                        </div>
+                      </div>
+                    )
+                  }
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className='user-home__event-right'>
+          <div>
+            <h3>TA的关注</h3>
+            <ul className='follow-list'>
               {
-                showComment && <MyComment data={commentData} offset={0} pageSize={10} onChange={() => {}} />
+                follow.map(item => (
+                  <li>
+                    <img src={item.avatarUrl} alt={item.nickname}/>
+                    <div>
+                      <div className='follow-li__nickname' title={item.nickname}>{item.nickname}</div>
+                    </div>
+                  </li>
+                ))
               }
-            </>
-          )
-        })
-      }
+            </ul>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

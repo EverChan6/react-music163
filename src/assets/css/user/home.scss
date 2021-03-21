@@ -281,3 +281,61 @@
     }
   }
 }
+
+.comment-list {
+  margin: 12px 0 0;
+  padding: 15px;
+  border: 1px solid #d9d9d9;
+  background: #f8f8f8;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #fcfcfc;
+}
+
+.see-more {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-home__event {
+  display: flex;
+  &-left {
+    flex: 1;
+  }
+  &-right {
+    align-self: stretch;
+    width: 250px;
+    border-left: 1px solid #e8e8e9;
+    > div {
+      &:first-child {
+        padding: 10px 0 0 25px;
+      }
+    }
+  }
+}
+
+.follow-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  padding-top: 15px;
+  margin: 0;
+  list-style: none;
+  li {
+    width: 64px;
+    margin-right: 16px;
+    margin-bottom: 16px;
+    img {
+      width: 64px;
+      height: 64px;
+    }
+  }
+}
+
+.follow-li__nickname {
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
