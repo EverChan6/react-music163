@@ -1,11 +1,12 @@
 import React, { createElement, useState, useEffect, useContext, useCallback, useMemo } from 'react'
 import { useLocation, useHistory, Switch, Route } from 'react-router-dom'
-import { Comment, Button, Tag, Tooltip, Avatar } from 'antd'
+import { Comment, Button, Tag, Tooltip, Avatar, Pagination } from 'antd'
 import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, ToTopOutlined, SendOutlined,
    CaretRightOutlined, PlayCircleOutlined, FolderAddOutlined, ShareAltOutlined, DownloadOutlined,
   InfoCircleOutlined, ManOutlined, WomanOutlined, WeiboOutlined, PlusOutlined, MailOutlined, UpOutlined } from "@ant-design/icons"
 import '@/assets/css/user/home.scss'
-import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, getVideo, getCommentOfEvent, getFollows } from '@/api/user'
+import { getUserDetail, getUserPlaylist, getUserRecord, getUserEvent, 
+  getVideo, getCommentOfEvent, getFollows, getFolloweds } from '@/api/user'
 import { Card } from '@/components/Card'
 import {
   CommentArea,
@@ -16,17 +17,19 @@ const IdContext = React.createContext('')
 
 const Profile = () => {
   let history = useHistory()
-  const { uid, setNickname } = useContext(IdContext)
+  const { uid, setNickname, setFolloweds } = useContext(IdContext)
   const [data, setData] = useState({})
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await getUserDetail({ uid })
       setData(res)
       setNickname(res?.profile?.nickname)
+      setFolloweds(res?.profile?.followeds)
     }
     
     fetchData()
-  }, [])
+  }, [uid])
 
   function goTo(pathname) {
     history.push(`/user/${pathname}?id=${uid}`)
@@ -65,11 +68,11 @@ const Profile = () => {
             <h3>{data?.profile?.eventCount}</h3>
             <span>动态</span>
           </div>
-          <div>
+          <div onClick={() => goTo('follows')}>
             <h3>{data?.profile?.follows}</h3>
             <span>关注</span>
           </div>
-          <div>
+          <div onClick={() => goTo('fans')}>
             <h3>{data?.profile?.followeds}</h3>
             <span>粉丝</span>
           </div>
@@ -167,7 +170,7 @@ const Created = () => {
     }
 
     fetchData()
-  }, [uid, nickname])
+  }, [uid])
 
   return (
     <>
@@ -200,6 +203,7 @@ const Created = () => {
   )
 }
 
+// 动态
 const Event = () => {
   const { uid } = useContext(IdContext)
   const [likes, setLikes] = useState(0)
@@ -363,7 +367,7 @@ const Event = () => {
             <ul className='follow-list'>
               {
                 follow.map(item => (
-                  <li>
+                  <li key={item.userId}>
                     <img src={item.avatarUrl} alt={item.nickname}/>
                     <div>
                       <div className='follow-li__nickname' title={item.nickname}>{item.nickname}</div>
@@ -531,6 +535,65 @@ const ResourceComp = (prop) => {
   )
 }
 
+const Follow = (prop) => {
+  const { uid, followeds } = useContext(IdContext)
+  const { compType } = prop
+  const [follow, setFollow] = useState([])
+  const [current, setCurrent] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { follow } = await getFollows({ uid, limit: pageSize, offset: current - 1 })
+      setFollow(follow)
+    }
+
+    const fetchData2 = async () => {
+      const { followeds } = await getFolloweds({ uid, limit: pageSize, time: follow.length ? follow[follow.length - 1].time : '-1' })
+      setFollow(followeds)
+    }
+
+    compType === '1' ? fetchData() : fetchData2()
+  }, [uid, current, pageSize])
+
+  const onChange = (page, pageSize) => {
+    setCurrent(page)
+    setPageSize(pageSize)
+  }
+
+  return (
+    <div>
+      <div className='user-home__follow-title title'>
+        {
+          compType === '1' ? `关注(${follow.length})` : `粉丝(${followeds})`
+        }
+      </div>
+      <ul className='follow-div'>
+        {
+          follow.map(item => (
+            <li key={item.userId}>
+              <img src={item.avatarUrl} alt={item.avatarUrl}/>
+              <div className='li-div'>
+                <div className='li-div-div'>
+                  <span className='blue-text'>{item.nickname}</span>
+                </div>
+                <div className='li-div-div'>
+                  <span>动态<span className='blue-text'>{item.eventCount}</span></span>
+                  <span>关注<span className='blue-text'>{item.follows}</span></span>
+                  <span>粉丝<span className='blue-text'>{item.followeds}</span></span>
+                </div>
+                <div className='li-div-div'>{item.signature}</div>
+              </div>
+              <Button type="primary" icon={<PlusOutlined />}>关注</Button>
+            </li>
+          ))
+        }
+      </ul>
+      <Pagination current={current} pageSize={pageSize} onChange={onChange} total={compType === '1' ? follow.length : followeds}/>
+    </div>
+  )
+}
+
 const Home = () => {
   const { search } = useLocation()
   const obj = {}
@@ -540,9 +603,10 @@ const Home = () => {
   })
 
   const [nickname, setNickname] = useState('')
-  
+  const [followeds, setFolloweds] = useState('')
+
   return (
-    <IdContext.Provider value={{ uid: obj.id, nickname, setNickname }}>
+    <IdContext.Provider value={{ uid: obj.id, nickname, setNickname, followeds, setFolloweds }}>
       <div>
         <Profile />
         <Switch>
@@ -552,6 +616,12 @@ const Home = () => {
           </Route>
           <Route exact path='/user/event'>
             <Event />
+          </Route>
+          <Route exact path='/user/follows'>
+            <Follow compType='1'/>
+          </Route>
+          <Route exact path='/user/fans'>
+            <Follow compType='2'/>
           </Route>
         </Switch>
         
