@@ -17,7 +17,7 @@ const IdContext = React.createContext('')
 
 const Profile = () => {
   let history = useHistory()
-  const { uid, setNickname, setFolloweds } = useContext(IdContext)
+  const { uid, setNickname, setFollows, setFolloweds } = useContext(IdContext)
   const [data, setData] = useState({})
 
   useEffect(() => {
@@ -25,6 +25,7 @@ const Profile = () => {
       const res = await getUserDetail({ uid })
       setData(res)
       setNickname(res?.profile?.nickname)
+      setFollows(res?.profile?.follows)
       setFolloweds(res?.profile?.followeds)
     }
     
@@ -536,7 +537,7 @@ const ResourceComp = (prop) => {
 }
 
 const Follow = (prop) => {
-  const { uid, followeds } = useContext(IdContext)
+  const { uid, follows, followeds } = useContext(IdContext)
   const { compType } = prop
   const [follow, setFollow] = useState([])
   const [current, setCurrent] = useState(1)
@@ -565,7 +566,7 @@ const Follow = (prop) => {
     <div>
       <div className='user-home__follow-title title'>
         {
-          compType === '1' ? `关注(${follow.length})` : `粉丝(${followeds})`
+          compType === '1' ? `关注(${follows})` : `粉丝(${followeds})`
         }
       </div>
       <ul className='follow-div'>
@@ -589,7 +590,7 @@ const Follow = (prop) => {
           ))
         }
       </ul>
-      <Pagination current={current} pageSize={pageSize} onChange={onChange} total={compType === '1' ? follow.length : followeds}/>
+      <Pagination style={{textAlign: 'center'}} current={current} pageSize={pageSize} onChange={onChange} total={compType === '1' ? follows : followeds}/>
     </div>
   )
 }
@@ -604,9 +605,10 @@ const Home = () => {
 
   const [nickname, setNickname] = useState('')
   const [followeds, setFolloweds] = useState('')
+  const [follows, setFollows] = useState('')
 
   return (
-    <IdContext.Provider value={{ uid: obj.id, nickname, setNickname, followeds, setFolloweds }}>
+    <IdContext.Provider value={{ uid: obj.id, nickname, setNickname, follows, setFollows, followeds, setFolloweds }}>
       <div>
         <Profile />
         <Switch>
