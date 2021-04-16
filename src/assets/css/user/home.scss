@@ -385,3 +385,10 @@
 .blue-text {
   color: #0c73c2;
 }
+
+.click-text {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

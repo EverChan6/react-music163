@@ -42,8 +42,9 @@ const Profile = () => {
       <div>
         <div className='profile-line line1'>
           <h2>{data?.profile?.nickname}</h2>
+          {/* data?.profile?.avatarDetail?.identityLevel ? <img src={require(`@/assets/images/level${data?.profile?.avatarDetail?.identityLevel}.png`)} alt={`等级{data?.profile?.avatarDetail?.identiryLevel}`}/> : '' */}
           {
-            data?.profile?.avatarDetail?.identityLevel ? <img src={require(`@/assets/images/level${data?.profile?.avatarDetail?.identityLevel}.png`)} alt={`等级{data?.profile?.avatarDetail?.identiryLevel}`}/> : ''
+            data?.profile?.avatarDetail?.identityLevel ? <img src={require(`@/assets/images/level1.png`)} alt={`等级{data?.profile?.avatarDetail?.identiryLevel}`}/> : ''
           }
           {
             data?.profile?.gender === 1 ? <ManOutlined /> : <WomanOutlined />
@@ -537,6 +538,7 @@ const ResourceComp = (prop) => {
 }
 
 const Follow = (prop) => {
+  let history = useHistory()
   const { uid, follows, followeds } = useContext(IdContext)
   const { compType } = prop
   const [follow, setFollow] = useState([])
@@ -562,6 +564,10 @@ const Follow = (prop) => {
     setPageSize(pageSize)
   }
 
+  const goTo = (pathname, uid) => {
+    history.push(`/user/${pathname}?id=${uid}`)
+  }
+
   return (
     <div>
       <div className='user-home__follow-title title'>
@@ -573,15 +579,15 @@ const Follow = (prop) => {
         {
           follow.map(item => (
             <li key={item.userId}>
-              <img src={item.avatarUrl} alt={item.avatarUrl}/>
+              <img style={{cursor: 'pointer'}} src={item.avatarUrl} alt={item.avatarUrl} onClick={() => goTo('home', item.userId)}/>
               <div className='li-div'>
                 <div className='li-div-div'>
-                  <span className='blue-text'>{item.nickname}</span>
+                  <span className='blue-text click-text' onClick={() => goTo('home', item.userId)}>{item.nickname}</span>
                 </div>
                 <div className='li-div-div'>
-                  <span>动态<span className='blue-text'>{item.eventCount}</span></span>
-                  <span>关注<span className='blue-text'>{item.follows}</span></span>
-                  <span>粉丝<span className='blue-text'>{item.followeds}</span></span>
+                  <span className='click-text' onClick={() => goTo('event', item.userId)}>动态<span className='blue-text'>{item.eventCount}</span></span>
+                  <span className='click-text' onClick={() => goTo('follows', item.userId)}>关注<span className='blue-text'>{item.follows}</span></span>
+                  <span className='click-text' onClick={() => goTo('fans', item.userId)}>粉丝<span className='blue-text'>{item.followeds}</span></span>
                 </div>
                 <div className='li-div-div'>{item.signature}</div>
               </div>
