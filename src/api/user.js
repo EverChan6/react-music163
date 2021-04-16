@@ -67,3 +67,25 @@ export function getUserRecord(params) {
     params
   })
 }
+
+/**
+ * 获取用户关注列表
+ */
+ export function getFollows(params) {
+  return http.request({
+    url: '/user/follows',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取用户粉丝列表
+ */
+ export function getFolloweds(params) {
+  return http.request({
+    url: '/user/followeds',
+    method: 'get',
+    params
+  })
+}

@@ -63,6 +63,14 @@ const routes = [
         path: '/event',
         component: React.lazy(() => import('../pages/user/Home'))
       },
+      {
+        path: '/follows',
+        component: React.lazy(() => import('../pages/user/Home'))
+      },
+      {
+        path: '/fans',
+        component: React.lazy(() => import('../pages/user/Home'))
+      },
     ]
   }
 ]
