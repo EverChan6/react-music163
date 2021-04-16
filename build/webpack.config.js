@@ -13,7 +13,7 @@ const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
 const devMode = process.argv.indexOf('--mode=production') === -1
 
 module.exports = {
-  entry: ['@babel/polyfill', path.resolve(__dirname, '../src/main.js')], // 入口文件
+  entry: ['@babel/polyfill', path.resolve(__dirname, '../src/main.tsx')], // 入口文件
   output: {
     filename: '[name].[contenthash:8].js', // 打包后的文件名称
     path: path.resolve(__dirname, '../dist'), // 打包后输出的文件所在的目录
@@ -34,12 +34,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(jsx?|tsx?)$/,
         use: [{
-          loader: 'happypack/loader?id=happyBabel',
-          // options: {
-          //   presets: ['@babel/preset-env']
-          // }
+          loader: 'happypack/loader?id=happyBabel'
         }],
         include: [path.resolve(__dirname, '../src')],
         exclude: /node_modules/
@@ -142,7 +139,12 @@ module.exports = {
           options: {
             presets: [
               ['@babel/preset-env', { modules: false }], // 解决babel tree-shaking的坑
-              ['@babel/preset-react']
+              ['@babel/preset-react'],
+              ['@babel/preset-typescript']
+            ],
+            plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
+              ['@babel/plugin-proposal-class-properties', { loose: true }]
             ],
             cacheDirectory: true
           }
